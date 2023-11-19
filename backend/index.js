@@ -15,6 +15,8 @@ var pool = mysql.createPool({
   database: process.env.database,
 });
 
+app.use(express.static("./frontend/dist"));
+
 app.use(cors());
 
 app.get("/api/treffit", (req, res) => {
