@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
 function App() {
@@ -8,7 +6,7 @@ function App() {
 
   useEffect(() => {
     const fetchIt = async () => {
-      let hr = await fetch("/api/treffit");
+      let hr = await fetch(`${import.meta.env.VITE_API_URL}/api/treffit`);
       let data = await hr.json();
       setTinders(data);
     };
