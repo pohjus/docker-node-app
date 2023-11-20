@@ -1,41 +1,46 @@
-# Stage 1: Build the frontend
+## STAGE 1
+
+# Use a lightweight Node.js image as a base for building the frontend
 FROM node:20.9.0-alpine as frontend-builder
 
-# Set working directory for frontend
+# Set the working directory inside the container to /app/frontend
 WORKDIR /app/frontend
 
-# Copy package.json and package-lock.json for frontend
+# Copy frontend package.json and package-lock.json to the working directory
 COPY frontend/package*.json ./
 
-# Install frontend dependencies
+# Install dependencies defined in package.json
 RUN npm install
 
-# Copy frontend source code
+# Copy all frontend source code to the working directory
 COPY frontend .
 
-# Build the frontend
+# Run the build script defined in package.json to build the frontend
 RUN npm run build
 
-# Stage 2: Setup the backend
+## STAGE 2
+
+# Start a new build stage with the same lightweight Node.js image
 FROM node:20.9.0-alpine
 
-# Set working directory for backend
+# Set the working directory inside the container to /app/backend
 WORKDIR /app/backend
 
-# Copy package.json and package-lock.json for backend
+# Copy backend package.json and package-lock.json to the working directory
 COPY backend/package*.json ./
 
-# Install backend dependencies
+# Install dependencies for the backend
 RUN npm install
 
-# Copy backend source code
+# Copy all backend source code to the working directory
 COPY backend .
 
-# Copy built frontend files from frontend-builder stage
+# Copy the built frontend files from the frontend-builder stage
+# to the directory serving frontend files in the backend
 COPY --from=frontend-builder /app/frontend/dist /app/backend/frontend/dist
 
-# Expose the port the backend listens on
+# Inform Docker that the container listens on the specified network port at runtime
 EXPOSE 8080
 
-# Command to run the backend
+# Define the command to run the backend server
 CMD ["npm", "start"]
