@@ -26,15 +26,23 @@ app.get("/api/treffit", (req, res) => {
   });
 });
 
-const server = app
-  .listen(port, () => {
-    console.log(`SERVER: listening on port ${port}.`);
-    console.log(process.env);
-  })
-  .on("error", (err) => {
-    console.error("SERVER: Error starting server: ", err);
-    process.exit(1);
-  });
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error("Error connecting to MySQL pool:", err);
+  } else {
+    console.log("Connected to MySQL pool");
+    connection.release(); // release to pool
+    const server = app
+      .listen(port, () => {
+        console.log(`SERVER: listening on port ${port}.`);
+        // console.log(process.env);
+      })
+      .on("error", (err) => {
+        console.error("SERVER: Error starting server: ", err);
+        process.exit(1);
+      });
+  }
+});
 
 const gracefulShutdown = () => {
   console.log("SERVER: Starting graceful shutdown...");
